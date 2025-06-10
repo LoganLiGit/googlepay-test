@@ -223,5 +223,116 @@ class paySDK {
     this.googlePay.callback = callback;
   };
   /** googlePay End ==============================================================================================================*/
-  
+  /** ApplePay  Start*/
+  /** 設定付款資訊 */
+  setApplePay = function (aoolePayParams) {
+    const { applePayPaymentRequest } = aoolePayParams;
+    this.applePay.applePayPaymentRequest = applePayPaymentRequest;
+  };
+  /** 設定驗證商戶的function */
+  setAppleValidateMerchant = function (validateMerchant) {
+    this.applePay.validateMerchant = validateMerchant;
+  };
+  /** 設定回傳token的function */
+  setApplePayCallback = function (callback) {
+    this.applePay.callback = callback;
+  };
+  /** 設定付款完成的狀態 */
+  setApplePayCompletePayment = function (result) {
+    this.applePay.completePayment = result;
+  };
+  /** applePay按鈕 執行的function */
+  onApplePayButtonClicked = function () {
+    // Ensure browser supports Apple Pay
+    if (!ApplePaySession) {
+      return;
+    }
+
+    // Create ApplePaySession
+    const version = 3; // Apple Pay 版本可在 macOS 10.13 和 iOS 11 中使用
+    const session = new ApplePaySession(
+      version,
+      sdk.applePay.applePayPaymentRequest
+    );
+    /**  驗證商戶 */
+    session.onvalidatemerchant = async (event) => {
+      // Call your own server to request a new merchant session.
+      const merchantSession = await sdk.applePay.validateMerchant(
+        event.validationURL
+      );
+      session.completeMerchantValidation(merchantSession);
+    };
+
+    /** 授權付款 */
+    session.onpaymentauthorized = (event) => {
+      // Define ApplePayPaymentAuthorizationResult
+      sdk.applePay.callback(event.payment.token.paymentData);
+
+      const result = {
+        status: sdk.applePay.completePayment
+          ? ApplePaySession.STATUS_SUCCESS
+          : ApplePaySession.STATUS_FAILURE,
+      };
+      session.completePayment(result);
+    };
+    /** 取消 */
+    session.oncancel = (event) => {
+      // Payment cancelled by WebKit
+      alert("取消付款或付款失敗");
+    };
+    /** 開始 */
+    session.begin();
+
+    // /** 已選擇付款方式 */
+    // session.onpaymentmethodselected = (event) => {
+    //   // Define ApplePayPaymentMethodUpdate based on the selected payment method.
+    //   // No updates or errors are needed, pass an empty object.
+    //   console.log("paymentChange", event);
+    //   const update = {
+    //     newTotal: {
+    //       label: "Demo (Card is not charged)",
+    //       type: "final",
+    //       amount: "100",
+    //     },
+    //   };
+    //   // const update = {};
+    //   session.completePaymentMethodSelection(update);
+    // };
+
+    // /** 出貨方式已選擇  */
+    // session.onshippingmethodselected = (event) => {
+    //   console.log("shippingMethodChange", event);
+    //   // Define ApplePayShippingMethodUpdate based on the selected shipping method.
+    //   // No updates or errors are needed, pass an empty object.
+    //   const update = {};
+    //   session.completeShippingMethodSelection(update);
+    // };
+
+    // /** 出貨聯絡方式已選擇 */
+    // session.onshippingcontactselected = (event) => {
+    //   console.log("onshippingcontactselected", event);
+    //   // Define ApplePayShippingContactUpdate based on the selected shipping contact.
+    //   const update = {};
+    //   session.completeShippingContactSelection(update);
+    // };
+
+    // /** 優惠券代碼更改時 */
+    // session.oncouponcodechanged = (event) => {
+    //   // Define ApplePayCouponCodeUpdate
+    //   const newTotal = calculateNewTotal(event.couponCode);
+    //   const newLineItems = calculateNewLineItems(event.couponCode);
+    //   const newShippingMethods = calculateNewShippingMethods(event.couponCode);
+    //   const errors = calculateErrors(event.couponCode);
+
+    //   /** 完成優惠券代碼更改 */
+    //   session.completeCouponCodeChange({
+    //     newTotal: newTotal,
+    //     newLineItems: newLineItems,
+    //     newShippingMethods: newShippingMethods,
+    //     errors: errors,
+    //   });
+    // };
+  };
+
+  /** ApplePay  End*/
 }
