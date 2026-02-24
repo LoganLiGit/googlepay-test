@@ -23,6 +23,7 @@ class paySDK {
       return paymentsClient
         .isReadyToPay(this.getGoogleIsReadyToPayRequest())
         .then((response) => {
+          console.log(response);
           if (response.result) {
             // return response.result;
             this.addGooglePayButton();
