@@ -18,26 +18,26 @@
       googlePayButtonID: "google-pay",
       // 開發環境或者產品環境
       environment: "TEST", // TEST || PRODUCTION,
-      // 允許的卡片
+      // 允許的卡片，中信收單僅允許 VISA、MASTER 卡
       allowedCardNetworks: [
-        "AMEX",
-        "DISCOVER",
-        "INTERAC",
-        "JCB",
+        //"AMEX",
+        //"DISCOVER",
+        //"INTERAC",
+        //"JCB",
         "MASTERCARD",
         "VISA",
       ],
-      // 允許的卡片驗證方法
+      // 允許的卡片驗證方法，中信收單僅允許CRYPTOGRAM_3DS
       allowedCardAuthMethods: ["CRYPTOGRAM_3DS"],
       // 通道
-      //parameters: {
-      //  gateway: "ctbcbank",
-      //  gatewayMerchantId: "8220200000054",
-      //},
       parameters: {
-        gateway: "nccc",
-        gatewayMerchantId: "0130800048",
+        gateway: "ctbcbank",
+        gatewayMerchantId: "8220200000054",
       },
+      //parameters: {
+      //  gateway: "nccc",
+      //  gatewayMerchantId: "0130800048",
+      //},
       // 商家
       merchantInfo: {
         merchantName: "OO線上商城",
